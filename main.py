@@ -28,8 +28,10 @@ sleep(3)
 print("Đang thực hiện sắp xếp các cặp USDT theo khối lượng Market Cap...")
 marketCapHeaderSortButton = driver.find_element(
     By.XPATH, r"/html/body/div[1]/div/div/main/div/div[2]/div/div/div[2]/div[2]/div/div[1]/div[6]/div")
-marketCapHeaderSortButton.click()  # Click lan dau la sap xep theo tang dan
-marketCapHeaderSortButton.click()  # Click lan 2 la sap xep tu lon den be
+# marketCapHeaderSortButton.click()  # Click lan dau la sap xep theo tang dan
+driver.execute_script("arguments[0].click();", marketCapHeaderSortButton)
+# marketCapHeaderSortButton.click()  # Click lan 2 la sap xep tu lon den be
+driver.execute_script("arguments[0].click();", marketCapHeaderSortButton)
 sleep(3)
 
 # Bien dung de nhan bien khi nao da het trang
@@ -101,7 +103,8 @@ def LayCacDongDuLieuTuBang():
     print("Đang chuyển sang trang tiếp theo")
     nextPageButton = driver.find_element(
         By.XPATH, r"/html/body/div[1]/div/div/main/div/div[2]/div/div/div[2]/div[3]/div/button[9]")
-    nextPageButton.click()
+    # nextPageButton.click()
+    driver.execute_script("arguments[0].click();", nextPageButton)
     sleep(1)
 
     # Tra ve danh sach cac cap USDT da lay duoc
