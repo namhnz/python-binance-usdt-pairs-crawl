@@ -8,7 +8,7 @@ import pandas as pd
 import openpyxl
 import os
 
-print("Tool lấy danh sách các cặp BUSD spot tren Binance")
+print("Tool lấy danh sách các cặp USDT spot tren Binance")
 
 # Khoi tao selenium
 s = Service(ChromeDriverManager().install())
@@ -19,13 +19,13 @@ op.add_argument(r"start-maximized")
 driver = webdriver.Chrome(service=s, options=op)
 driver.maximize_window()
 
-# Mo trang Spot BUSD
-print("Đang mở trang Spot BUSD")
-driver.get(r"https://www.binance.com/en/markets/spot-BUSD")
+# Mo trang Spot USDT
+print("Đang mở trang Spot USDT")
+driver.get(r"https://www.binance.com/en/markets/spot-USDT")
 sleep(3)
 
-# Sap xep cac cap BUSD theo khoi luong Market Cap
-print("Đang thực hiện sắp xếp các cặp BUSD theo khối lượng Market Cap...")
+# Sap xep cac cap USDT theo khoi luong Market Cap
+print("Đang thực hiện sắp xếp các cặp USDT theo khối lượng Market Cap...")
 marketCapHeaderSortButton = driver.find_element(
     By.XPATH, r"/html/body/div[1]/div/div/main/div/div[2]/div/div/div[2]/div[2]/div/div[1]/div[6]/div")
 marketCapHeaderSortButton.click()  # Click lan dau la sap xep theo tang dan
@@ -45,7 +45,7 @@ def LayCacDongDuLieuTuBang():
         By.TAG_NAME, r"button")
     for navigationButon in allNavigationButtons:
         if navigationButon.get_attribute("disabled") != None and ("Page number" in navigationButon.get_attribute("aria-label")):
-            print("Đang lấy dữ liệu các cặp BUSD tại trang: " +
+            print("Đang lấy dữ liệu các cặp USDT tại trang: " +
                   navigationButon.text)
 
         if navigationButon.get_attribute("disabled") != None and navigationButon.get_attribute("aria-label") == "Next page":
@@ -62,8 +62,8 @@ def LayCacDongDuLieuTuBang():
     #         if divInsideHeader.get_attribute(r"data-bn-type") == "text":
     #             tableColumnHeaderTitleTexts.append(divInsideHeader.get_attribute(r"title"));
 
-    # Lay phan chua cac dong du lieu cac cap BUSD
-    print("Đang lấy phần tử chứa các dòng dữ liệu cặp BUSD")
+    # Lay phan chua cac dong du lieu cac cap USDT
+    print("Đang lấy phần tử chứa các dòng dữ liệu cặp USDT")
     tableDataContainer = driver.find_element(
         By.XPATH, r"/html/body/div[1]/div/div/main/div/div[2]/div/div/div[2]/div[2]/div/div[2]")
 
@@ -74,10 +74,10 @@ def LayCacDongDuLieuTuBang():
     coinPairInfoList = []
 
     for rowDataContainer in tableRowDataContainter:
-        # Lay ten coin/BUSD
+        # Lay ten coin/USDT
         coinNameText = rowDataContainer.find_element(
             By.CLASS_NAME, r"css-17wnpgm").text
-        coinWithBUSDText = coinNameText + r"/BUSD"
+        coinWithUSDTText = coinNameText + r"/USDT"
 
         # Lay gia tri Market Cap
         marketCapValueText = rowDataContainer.find_elements(
@@ -95,7 +95,7 @@ def LayCacDongDuLieuTuBang():
             marketCapValueLong = float(marketCapValueText.replace(',', ''))
 
         coinPairInfoList.append(
-            [coinNameText, coinWithBUSDText, marketCapValueText, marketCapValueLong])
+            [coinNameText, coinWithUSDTText, marketCapValueText, marketCapValueLong])
 
     # Chuyen sang trang moi de lay cac cap khac
     print("Đang chuyển sang trang tiếp theo")
@@ -104,7 +104,7 @@ def LayCacDongDuLieuTuBang():
     nextPageButton.click()
     sleep(1)
 
-    # Tra ve danh sach cac cap BUSD da lay duoc
+    # Tra ve danh sach cac cap USDT da lay duoc
     return coinPairInfoList
 
 # Ghi du lieu vao file Excel
@@ -112,9 +112,9 @@ def LayCacDongDuLieuTuBang():
 
 def GhiDuLieuVaoFileExcel(dataToWrite):
     df = pd.DataFrame(dataToWrite, index=range(len(dataToWrite) + 1)[1:], columns=[
-                      r"Ten coin", r"Cap coin/BUSD", r"Market Cap (Text)", r"Market Cap (Number)"])
+                      r"Ten coin", r"Cap coin/USDT", r"Market Cap (Text)", r"Market Cap (Number)"])
 
-    saveExcelFileName = r"binance_busd_pair_list.xlsx"
+    saveExcelFileName = r"binance_USDT_pair_list.xlsx"
     if os.path.exists(saveExcelFileName):
         os.remove(saveExcelFileName)
         print(
@@ -125,14 +125,14 @@ def GhiDuLieuVaoFileExcel(dataToWrite):
 
 
 def GhiDuLieuVaoFileText(dataToWrite):
-    print("Đang ghi dữ liệu các cặp BUSD có Market Cap > 50tr USD vào file text...")
+    print("Đang ghi dữ liệu các cặp USDT có Market Cap > 50tr USD vào file text...")
     textWriteToFile = ""
     for dataLine in dataToWrite:
         if dataLine[3] > 50000000:
-            coinBUSDPairText = f'"{dataLine[1]}"'
-            textWriteToFile = textWriteToFile + coinBUSDPairText + ",\n"
+            coinUSDTPairText = f'"{dataLine[1]}"'
+            textWriteToFile = textWriteToFile + coinUSDTPairText + ",\n"
 
-    saveTextFileName = r"binance_busd_pair_list_cap_over_50m.txt"
+    saveTextFileName = r"binance_USDT_pair_list_cap_over_50m.txt"
     if os.path.exists(saveTextFileName):
         os.remove(saveTextFileName)
         print(
@@ -152,7 +152,7 @@ while(canMoveToNextPage):
 # Ghi ket qua vao file Excel
 GhiDuLieuVaoFileExcel(allPairInfoListFromBinance)
 
-# Ghi ket qua cac cap BUSD co Market Cap tren 50 trieu USD vao file text de copy
+# Ghi ket qua cac cap USDT co Market Cap tren 50 trieu USD vao file text de copy
 GhiDuLieuVaoFileText(allPairInfoListFromBinance)
 
 # Dong selenium
